@@ -18,6 +18,11 @@ router.get('/user/login', isNotAuth, async (req, res) => {
     res.redirect(authURL)
 })
 
+router.post('/user/logout', isAuth, async (req, res) => {
+    req.session.destroy()
+    return res.redirect('/')
+})
+
 // Discord Login Redirect
 router.get('/discord-redirect', isNotAuth, async (req, res) => {
     if (!req.url.includes('access_token')) return res.render('api-discord-redirect.ejs')
