@@ -1,0 +1,37 @@
+{
+  "name": "maple-club-website-app",
+  "version": "1.0.0",
+  "engines": {
+    "node": "17.x"
+  },
+  "description": "https://mapleclub.top",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guptadevik2003/Maple-Club-Website-App.git"
+  },
+  "author": "Devik_NotFound#2695",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guptadevik2003/Maple-Club-Website-App/issues"
+  },
+  "homepage": "https://github.com/guptadevik2003/Maple-Club-Website-App#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "connect-mongodb-session": "^3.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^11.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "express-session": "^1.17.2",
+    "fs": "^0.0.1-security",
+    "mongoose": "^6.1.6",
+    "node-fetch": "^2.6.6"
+  }
+}
