@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+</head>
+<body onload="bodyLoad()">
+    
+    <script>
+        async function bodyLoad() {
+            const URLRaw = window.location.href
+            if (URLRaw.includes('#') && URLRaw.includes('access_token')) {
+                const URLFormatted = URLRaw.replace('#', '?')
+                window.open(URLFormatted, '_self')
+            } else {
+                window.open('/login', '_self')
+            }
+        }
+    </script>
+
+</body>
+</html>
