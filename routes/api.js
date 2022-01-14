@@ -24,7 +24,15 @@ router.post('/user/logout', isAuth, async (req, res) => {
     return res.redirect('/')
 })
 
-router.post('/user/', isAuth, async (req, res) => {
+router.post('/user/register-account', isAuth, async (req, res) => {
+    let prvdDiscordId = req.session.discordId
+    if (!prvdDiscordId) return res.json({ success: false, error: 'Cant find Discord ID' })
+    const createdApiToken = await createToken(prvdDiscordId)
+    const prvdEmailId = req.query.emailId
+    console.log(prvdEmailId)
+})
+
+router.post('/user/create-api-token', isAuth, async (req, res) => {
     
 })
 
@@ -37,6 +45,7 @@ router.get('/discord-redirect', isNotAuth, async (req, res) => {
     if (!userInfo.id) return res.redirect('/login')
     req.session.isAuth = true
     req.session.access_token = access_token
+    req.session.discordId = userInfo.id
     const developers = ['741522321344430171']
     if (developers.includes(userInfo.id)) {
         req.session.isDev = true
@@ -45,10 +54,11 @@ router.get('/discord-redirect', isNotAuth, async (req, res) => {
 })
 
 router.get('/', async (req, res) => {
-    res.json({ msg: 'working' })
+    res.json({ success: true, message: 'api_route_working' })
 })
 
-router.post('/bot/:botIdParam', isAuthToken, async (req, res) => {
+// Post route to update bots last ping <==VERY IMPORTANT==>
+router.post('/bot/pingme/:botIdParam', isAuthToken, async (req, res) => {
     // Getting botId from botIdParam
     const botIdParam = req.params.botIdParam
     if (!botIdParam) return res.status(400).json({ success: false, error: 'botId Not Provided' })
@@ -56,6 +66,8 @@ router.post('/bot/:botIdParam', isAuthToken, async (req, res) => {
     // Checking for botId in database
     let botData = await webBotsUptime.findOne({ botUserId: botIdParam })
     if (!botData) return res.status(400).json({ success: false, error: 'botId is Wrong / Not Registered' })
+
+    if (botData.botOwnerId !== req.user.discordId) return res.status(400).json({ success: false, error: 'This Bot doesn\'t belong to you' })
     
     let pingTimestamp = new Date().getTime()
 
