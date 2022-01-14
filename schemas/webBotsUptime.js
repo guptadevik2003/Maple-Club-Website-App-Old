@@ -8,23 +8,25 @@ const webBotsUptime = new mongoose.Schema({
         unique: true
     },
     lastPingedTimestamp: {
-        type: Number,
+        type: Number
+    },
+    lastOfflineTimestamp: {
+        type: Number
     },
     botOwnerId: {
         type: String,
         required: true
     },
-    botOwnerEmail: {
+    botNotifyServerId: {
         type: String
     },
-    botSupportServerId: {
-        type: String,
-        required: true
+    botNotifyChannelId: {
+        type: String
     },
-    lastOfflineTimestamp: {
-        type: Number
+    botNotifyEmailId: {
+        type: String
     }
 
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('webBotsUptime', webBotsUptime, 'webBotsUptime')

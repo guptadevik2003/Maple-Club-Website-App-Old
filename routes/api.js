@@ -1,6 +1,7 @@
 const express = require('express')
+const websiteUsers = require('../schemas/websiteUsers')
 const webBotsUptime = require('../schemas/webBotsUptime')
-const JAT = require('../otherFunctions/JwtApiToken')
+const { createToken, isAuthToken } = require('../otherFunctions/JwtApiToken')
 const { isAuth, isNotAuth, isDev, devFetcher } = require('../otherFunctions/authValidator')
 
 const router = express.Router()
@@ -23,6 +24,10 @@ router.post('/user/logout', isAuth, async (req, res) => {
     return res.redirect('/')
 })
 
+router.post('/user/', isAuth, async (req, res) => {
+    
+})
+
 // Discord Login Redirect
 router.get('/discord-redirect', isNotAuth, async (req, res) => {
     if (!req.url.includes('access_token')) return res.render('api-discord-redirect.ejs')
@@ -43,14 +48,37 @@ router.get('/', async (req, res) => {
     res.json({ msg: 'working' })
 })
 
-router.post('/bot/:botIdParam', JAT.authToken, async (req, res) => {
-    console.log(`Hello world`)
-    let botIdParam = req.params.botIdParam
-    res.json({ botId: botIdParam })
+router.post('/bot/:botIdParam', isAuthToken, async (req, res) => {
+    // Getting botId from botIdParam
+    const botIdParam = req.params.botIdParam
+    if (!botIdParam) return res.status(400).json({ success: false, error: 'botId Not Provided' })
+
+    // Checking for botId in database
+    let botData = await webBotsUptime.findOne({ botUserId: botIdParam })
+    if (!botData) return res.status(400).json({ success: false, error: 'botId is Wrong / Not Registered' })
+    
+    let pingTimestamp = new Date().getTime()
+
+    await webBotsUptime.findOneAndUpdate({ botUserId: botIdParam }, {
+        lastPingedTimestamp: pingTimestamp
+    })
+
+    res.json({
+        success: true,
+        message: {
+            botUserId: botData.botUserId,
+            lastPingedTimestamp: pingTimestamp,
+            lastOfflineTimestamp: botData.lastOfflineTimestamp,
+            botOwnerId: botData.botOwnerId,
+            botNotifyServerId: botData.botNotifyServerId,
+            botNotifyChannelId: botData.botNotifyChannelId,
+            botNotifyEmailId: botData.botNotifyEmailId
+        }
+    })
 })
 
 router.post('/create/:id', async (req, res) => {
-    const token = await JAT.create(req.params.id)
+    const token = await createToken(req.params.id)
     res.json({ token: token })
 })
 

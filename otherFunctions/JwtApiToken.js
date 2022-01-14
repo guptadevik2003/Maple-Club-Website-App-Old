@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-module.exports.create = async (discordId) => {
+module.exports.createToken = async (discordId) => {
 
     const user = {
         discordId: discordId
@@ -12,14 +12,13 @@ module.exports.create = async (discordId) => {
 
 }
 
-module.exports.authToken = async (req, res, next) => {
+module.exports.isAuthToken = async (req, res, next) => {
 
     const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-    if (!token) return res.json({ msg: 'wrong_token'}).status(401)
-    
-    jwt.verify(token, process.env.JWT_API_TOKEN_SECRET, (err, user) => {
-        if (err) return res.json({ msg: 'denied' }).status(403)
+    const prvdToken = authHeader && authHeader.split(' ')[1]
+    if (!prvdToken) return res.status(401).json({ success: false, error: 'Authorization header with Bearer apiToken not Provided' })
+    jwt.verify(prvdToken, process.env.JWT_API_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(401).json({ success: false, error: 'Wrong apiToken Provided' })
         req.user = user
         next()
     })
